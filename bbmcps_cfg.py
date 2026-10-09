@@ -11,40 +11,32 @@ MAX_URL_SIZE = 4096
 MAX_SEARCH_RESULTS = 1000
 SCHEMA_VERSION = 3
 
-DB_PATH = None
-LOG_LEVEL = None
-MAX_CONTENT_SIZE = None
-MAX_COMMENT_SIZE = None
-MAX_PROMPT_SIZE = None
+DB_PATH = Path(
+    os.environ.get("BLACKBOARD_DB", DEFAULT_DB)
+).expanduser().resolve()
 
-def init_env():
+LOG_LEVEL = os.environ.get(
+    "BLACKBOARD_LOG_LEVEL",
+    "INFO"
+).upper()
 
-    DB_PATH = Path(
-        os.environ.get("BLACKBOARD_DB", DEFAULT_DB)
-    ).expanduser().resolve()
-
-    LOG_LEVEL = os.environ.get(
-        "BLACKBOARD_LOG_LEVEL",
-        "INFO"
-    ).upper()
-
-    MAX_CONTENT_SIZE = int(
-        os.environ.get(
-            "BLACKBOARD_MAX_CONTENT_SIZE",
-            str(1024 * 1024)
-        )
+MAX_CONTENT_SIZE = int(
+    os.environ.get(
+        "BLACKBOARD_MAX_CONTENT_SIZE",
+        str(1024 * 1024)
     )
+)
 
-    MAX_COMMENT_SIZE = int(
-        os.environ.get(
-            "BLACKBOARD_MAX_COMMENT_SIZE",
-            str(1024 * 1024)
-        )
+MAX_COMMENT_SIZE = int(
+    os.environ.get(
+        "BLACKBOARD_MAX_COMMENT_SIZE",
+        str(1024 * 1024)
     )
+)
 
-    MAX_PROMPT_SIZE = int(
-        os.environ.get(
-            "BLACKBOARD_MAX_PROMPT_SIZE",
-            str(1024 * 1024)
-        )
+MAX_PROMPT_SIZE = int(
+    os.environ.get(
+        "BLACKBOARD_MAX_PROMPT_SIZE",
+        str(1024 * 1024)
     )
+)
