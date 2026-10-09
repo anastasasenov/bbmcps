@@ -1,5 +1,10 @@
 # BBMCPS
 
+import mcp
+from mcp.server import MCPServer
+from bbmcps_dv import BlackboardDatabase
+import bbmcp_cfg as cfg
+
 g_db = None
 g_srv = None
 
@@ -10,7 +15,7 @@ def get_srv():
 def init_srv():
 
     g_bb = MCPServer(
-        SERVER_NAME,
+        cfg.SERVER_NAME,
         instructions=(
             "Blackboard is a persistent local SQLite knowledge graph. "
             "Use search_notes before assuming knowledge is absent. "
@@ -27,7 +32,7 @@ def get_db():
 
 def init_db():
     
-    g_db = BlackboardDatabase(DB_PATH)
+    g_db = BlackboardDatabase(cfg.DB_PATH)
 
 
 def utc_now() -> str:
@@ -95,7 +100,7 @@ def validate_url(url: str) -> str:
     url = validate_nonempty(
         url,
         "url",
-        MAX_URL_SIZE,
+        cfg.MAX_URL_SIZE,
     )
 
     parsed = urlparse(url)
@@ -291,7 +296,7 @@ def resolve_parent_id(
     parent_topic = validate_nonempty(
         parent_topic,
         "parent_topic",
-        MAX_TOPIC_SIZE,
+        cfg.MAX_TOPIC_SIZE,
     )
 
     row = conn.execute(
