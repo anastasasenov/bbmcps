@@ -59,7 +59,7 @@ class BlackboardDatabase:
 
     def initialize(self) -> None:
 
-        logger.info(
+        logging.info(
             "Initializing Blackboard database: %s",
             self.path,
         )
@@ -69,7 +69,7 @@ class BlackboardDatabase:
                 "PRAGMA user_version"
             ).fetchone()[0]
 
-            logger.info(
+            logging.info(
                 "Current schema version: %s",
                 version,
             )
@@ -285,12 +285,12 @@ class BlackboardDatabase:
 
             self._rebuild_fts(conn)
 
-            logger.info(
+            logging.info(
                 "SQLite FTS5 enabled"
             )
 
         except sqlite3.OperationalError as exc:
-            logger.warning(
+            logging.warning(
                 "SQLite FTS5 unavailable: %s",
                 exc,
             )
@@ -302,7 +302,7 @@ class BlackboardDatabase:
         to_version: int,
     ) -> None:
 
-        logger.info(
+        logging.info(
             "Migrating database %s -> %s",
             from_version,
             to_version,
