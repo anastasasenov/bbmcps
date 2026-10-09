@@ -13,15 +13,20 @@
 #       BLACKBOARD_MAX_COMMENT_SIZE
 #       BLACKBOARD_MAX_PROMPT_SIZE
 
+import sys
+import mcp
 import logging
-import bbmcp_cfg as cfg
-import bbmcp_fn as fn
+import bbmcps_cfg as cfg
+import bbmcps_fn as fn
 
 def main():
 
     cfg.init_env();
     logging.basicConfig(
-        level=getattr(logging, cfg.LOG_LEVEL, logging.INFO),
+        level=getattr(
+            logging,
+            logging.getLevelName(cfg.LOG_LEVEL),
+            logging.INFO),
         format=(
             "%(asctime)s "
             "%(levelname)s "
@@ -49,6 +54,5 @@ def main():
         cfg.DB_PATH,
     )
 
-    fn.init_srv()
     fn.get_srv().run(transport="stdio")
 
