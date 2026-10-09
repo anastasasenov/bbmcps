@@ -1,5 +1,7 @@
 # BBMCPS
 
+import bbmcp_cfg as cfg
+
 def save_note_impl(
     topic: str,
     content: str,
@@ -11,7 +13,7 @@ def save_note_impl(
     topic = validate_nonempty(
         topic,
         "topic",
-        MAX_TOPIC_SIZE,
+        cfg.MAX_TOPIC_SIZE,
     )
 
     if not isinstance(content, str):
@@ -19,10 +21,10 @@ def save_note_impl(
             "content must be a string"
         )
 
-    if len(content) > MAX_CONTENT_SIZE:
+    if len(content) > cfg.MAX_CONTENT_SIZE:
         raise ValidationError(
             f"content exceeds maximum size "
-            f"of {MAX_CONTENT_SIZE} bytes/characters"
+            f"of {cfg.MAX_CONTENT_SIZE} bytes/characters"
         )
 
     category = validate_nonempty(
@@ -170,7 +172,7 @@ def get_note_impl(
     topic = validate_nonempty(
         topic,
         "topic",
-        MAX_TOPIC_SIZE,
+        cfg.MAX_TOPIC_SIZE,
     )
 
     with db.connection() as conn:
@@ -248,7 +250,7 @@ def delete_note_impl(
     topic = validate_nonempty(
         topic,
         "topic",
-        MAX_TOPIC_SIZE,
+        cfg.MAX_TOPIC_SIZE,
     )
 
     with db.connection() as conn:
@@ -371,7 +373,7 @@ def search_notes_impl(
 
     limit = min(
         limit,
-        MAX_SEARCH_RESULTS,
+        cfg.MAX_SEARCH_RESULTS,
     )
 
     category = validate_optional_text(
@@ -511,7 +513,7 @@ def get_ancestors_impl(
     topic = validate_nonempty(
         topic,
         "topic",
-        MAX_TOPIC_SIZE,
+        cfg.MAX_TOPIC_SIZE,
     )
 
     with db.connection() as conn:
@@ -568,7 +570,7 @@ def get_descendants_impl(
     topic = validate_nonempty(
         topic,
         "topic",
-        MAX_TOPIC_SIZE,
+        cfg.MAX_TOPIC_SIZE,
     )
 
     if depth < 0:
@@ -644,7 +646,7 @@ def traverse_notes_impl(
     topic = validate_nonempty(
         topic,
         "topic",
-        MAX_TOPIC_SIZE,
+        cfg.MAX_TOPIC_SIZE,
     )
 
     if depth < 0:
@@ -796,13 +798,13 @@ def link_notes_impl(
     source_topic = validate_nonempty(
         source_topic,
         "source_topic",
-        MAX_TOPIC_SIZE,
+        cfg.MAX_TOPIC_SIZE,
     )
 
     target_topic = validate_nonempty(
         target_topic,
         "target_topic",
-        MAX_TOPIC_SIZE,
+        cfg.MAX_TOPIC_SIZE,
     )
 
     with db.connection() as conn:
@@ -878,13 +880,13 @@ def unlink_notes_impl(
     source_topic = validate_nonempty(
         source_topic,
         "source_topic",
-        MAX_TOPIC_SIZE,
+        cfg.MAX_TOPIC_SIZE,
     )
 
     target_topic = validate_nonempty(
         target_topic,
         "target_topic",
-        MAX_TOPIC_SIZE,
+        cfg.MAX_TOPIC_SIZE,
     )
 
     with db.connection() as conn:
@@ -936,7 +938,7 @@ def add_external_link_impl(
     note_topic = validate_nonempty(
         note_topic,
         "note_topic",
-        MAX_TOPIC_SIZE,
+        cfg.MAX_TOPIC_SIZE,
     )
 
     url = validate_url(url)
@@ -1035,10 +1037,10 @@ def save_agent_profile_impl(
             "system_prompt cannot be empty"
         )
 
-    if len(system_prompt) > MAX_PROMPT_SIZE:
+    if len(system_prompt) > cfg.MAX_PROMPT_SIZE:
         raise ValidationError(
             f"system_prompt exceeds maximum size "
-            f"of {MAX_PROMPT_SIZE}"
+            f"of {cfg.MAX_PROMPT_SIZE}"
         )
 
     with db.connection() as conn:
@@ -1207,7 +1209,7 @@ def create_thread_impl(
     note_topic = validate_optional_text(
         note_topic,
         "note_topic",
-        MAX_TOPIC_SIZE,
+        cfg.MAX_TOPIC_SIZE,
     )
 
     with db.connection() as conn:
@@ -1435,7 +1437,7 @@ def list_threads_impl(
 
     limit = min(
         limit,
-        MAX_SEARCH_RESULTS,
+        cfg.MAX_SEARCH_RESULTS,
     )
 
     status = validate_optional_text(
@@ -1447,7 +1449,7 @@ def list_threads_impl(
     note_topic = validate_optional_text(
         note_topic,
         "note_topic",
-        MAX_TOPIC_SIZE,
+        cfg.MAX_TOPIC_SIZE,
     )
 
     if status and status not in VALID_THREAD_STATUSES:
@@ -1542,7 +1544,7 @@ def stats_impl() -> dict[str, Any]:
 
         return {
             "database": str(db.path),
-            "schema_version": SCHEMA_VERSION,
+            "schema_version": cfg.SCHEMA_VERSION,
             "notes": notes,
             "root_notes": roots,
             "relations": relations,
@@ -1572,7 +1574,7 @@ def render_tree_impl(
             root_topic = validate_nonempty(
                 root_topic,
                 "root_topic",
-                MAX_TOPIC_SIZE,
+                cfg.MAX_TOPIC_SIZE,
             )
 
             root = get_note_row(
@@ -1666,7 +1668,7 @@ def render_tree_impl(
             if depth == 0:
                 marker = ""
             else:
-                marker = "|-- "
+                marker = "└── "
 
             lines.append(
                 f"{prefix}{marker}"
