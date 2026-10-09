@@ -14,11 +14,14 @@
 #       BLACKBOARD_MAX_PROMPT_SIZE
 
 import logging
+import bbmcp_cfg as cfg
+import bbmcp_fn as fn
 
 def main():
 
+    cfg.init_env();
     logging.basicConfig(
-        level=getattr(logging, LOG_LEVEL, logging.INFO),
+        level=getattr(logging, cfg.LOG_LEVEL, logging.INFO),
         format=(
             "%(asctime)s "
             "%(levelname)s "
@@ -32,8 +35,8 @@ def main():
 
     logger.info(
         "%s %s starting",
-        SERVER_NAME,
-        SERVER_VERSION,
+        cfg.SERVER_NAME,
+        cfg.SERVER_VERSION,
     )
 
     logger.info(
@@ -43,12 +46,9 @@ def main():
 
     logger.info(
         "Database: %s",
-        DB_PATH,
+        cfg.DB_PATH,
     )
 
-    # stdout belongs to the MCP protocol.
-    # Diagnostics must therefore go to stderr.
-    blackboard.run(
-        transport="stdio"
-    )
+    fn.init_srv()
+    fn.get_srv().run(transport="stdio")
 
