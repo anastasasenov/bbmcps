@@ -1,6 +1,7 @@
 # BBMCPS
 
 import sqlite3
+import bbmcps_cfg as cfg
 
 class BlackboardDatabase:
 
@@ -66,26 +67,26 @@ class BlackboardDatabase:
             if version == 0:
                 self._create_schema(conn)
                 conn.execute(
-                    f"PRAGMA user_version = {SCHEMA_VERSION}"
+                    f"PRAGMA user_version = {cfg.SCHEMA_VERSION}"
                 )
                 conn.commit()
 
-            elif version < SCHEMA_VERSION:
+            elif version < cfg.SCHEMA_VERSION:
                 self._migrate(
                     conn,
                     version,
-                    SCHEMA_VERSION,
+                    cfg.SCHEMA_VERSION,
                 )
                 conn.execute(
-                    f"PRAGMA user_version = {SCHEMA_VERSION}"
+                    f"PRAGMA user_version = {cfg.SCHEMA_VERSION}"
                 )
                 conn.commit()
 
-            elif version > SCHEMA_VERSION:
+            elif version > cfg.SCHEMA_VERSION:
                 raise RuntimeError(
                     f"Database schema version {version} "
                     f"is newer than supported version "
-                    f"{SCHEMA_VERSION}"
+                    f"{cfg.SCHEMA_VERSION}"
                 )
 
             self._verify_schema(conn)
