@@ -1,39 +1,34 @@
 # BBMCPS
 
+import sqlite3
+from contextlib import contextmanager
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Iterator, Optional
+from urllib.parse import urlparse
 import mcp
 from mcp.server import MCPServer
-from bbmcps_dv import BlackboardDatabase
-import bbmcp_cfg as cfg
+from bbmcps_db import BlackboardDatabase
+import bbmcps_cfg as cfg
 
-g_db = None
-g_srv = None
+g_db = BlackboardDatabase(cfg.DB_PATH)
+g_bb = MCPServer(
+    cfg.SERVER_NAME,
+    instructions=(
+        "Blackboard is a persistent local SQLite knowledge graph. "
+        "Use search_notes before assuming knowledge is absent. "
+        "Use get_note and traverse_notes to inspect existing knowledge. "
+        "Use save_note for persistent knowledge, link_notes for "
+        "cross-connections, discussions for persistent reasoning, "
+        "and agent profiles for reusable behavioral configurations."
+    ),
+)
 
 def get_srv():
-
     return g_srv
 
-def init_srv():
-
-    g_bb = MCPServer(
-        cfg.SERVER_NAME,
-        instructions=(
-            "Blackboard is a persistent local SQLite knowledge graph. "
-            "Use search_notes before assuming knowledge is absent. "
-            "Use get_note and traverse_notes to inspect existing knowledge. "
-            "Use save_note for persistent knowledge, link_notes for "
-            "cross-connections, discussions for persistent reasoning, "
-            "and agent profiles for reusable behavioral configurations."
-        ),
-    )
-
 def get_db():
-
     return g_db
-
-def init_db():
-    
-    g_db = BlackboardDatabase(cfg.DB_PATH)
-
 
 def utc_now() -> str:
 
