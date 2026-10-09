@@ -26,7 +26,7 @@ def save_note_impl(
     agent_profile_name: Optional[str] = None,
 ) -> dict[str, Any]:
 
-    topic = validate_nonempty(
+    topic = fn.validate_nonempty(
         topic,
         "topic",
         cfg.MAX_TOPIC_SIZE,
@@ -43,13 +43,13 @@ def save_note_impl(
             f"of {cfg.MAX_CONTENT_SIZE} bytes/characters"
         )
 
-    category = validate_nonempty(
+    category = fn.validate_nonempty(
         category,
         "category",
         128,
     ).lower()
 
-    agent_profile_name = validate_optional_text(
+    agent_profile_name = fn.validate_optional_text(
         agent_profile_name,
         "agent_profile_name",
         256,
@@ -185,7 +185,7 @@ def get_note_impl(
     topic: str,
 ) -> dict[str, Any]:
 
-    topic = validate_nonempty(
+    topic = fn.validate_nonempty(
         topic,
         "topic",
         cfg.MAX_TOPIC_SIZE,
@@ -252,9 +252,9 @@ def get_note_impl(
 
         return {
             "note": row_to_dict(note),
-            "children": rows_to_dicts(children),
-            "relations": rows_to_dicts(relations),
-            "external_links": rows_to_dicts(links),
+            "children": fn.rows_to_dicts(children),
+            "relations": fn.rows_to_dicts(relations),
+            "external_links": fn.rows_to_dicts(links),
         }
 
 
@@ -263,7 +263,7 @@ def delete_note_impl(
     cascade: bool = False,
 ) -> dict[str, Any]:
 
-    topic = validate_nonempty(
+    topic = fn.validate_nonempty(
         topic,
         "topic",
         cfg.MAX_TOPIC_SIZE,
@@ -376,7 +376,7 @@ def search_notes_impl(
     limit: int = 20,
 ) -> dict[str, Any]:
 
-    query = validate_nonempty(
+    query = fn.validate_nonempty(
         query,
         "query",
         1024,
@@ -392,7 +392,7 @@ def search_notes_impl(
         cfg.MAX_SEARCH_RESULTS,
     )
 
-    category = validate_optional_text(
+    category = fn.validate_optional_text(
         category,
         "category",
         128,
@@ -518,7 +518,7 @@ def search_notes_impl(
         return {
             "query": query,
             "count": len(rows),
-            "results": rows_to_dicts(rows),
+            "results": fn.rows_to_dicts(rows),
         }
 
 
@@ -526,7 +526,7 @@ def get_ancestors_impl(
     topic: str,
 ) -> dict[str, Any]:
 
-    topic = validate_nonempty(
+    topic = fn.validate_nonempty(
         topic,
         "topic",
         cfg.MAX_TOPIC_SIZE,
@@ -574,7 +574,7 @@ def get_ancestors_impl(
 
         return {
             "topic": topic,
-            "ancestors": rows_to_dicts(rows),
+            "ancestors": fn.rows_to_dicts(rows),
         }
 
 
@@ -583,7 +583,7 @@ def get_descendants_impl(
     depth: int = 10,
 ) -> dict[str, Any]:
 
-    topic = validate_nonempty(
+    topic = fn.validate_nonempty(
         topic,
         "topic",
         cfg.MAX_TOPIC_SIZE,
@@ -648,7 +648,7 @@ def get_descendants_impl(
             "topic": topic,
             "depth_limit": depth,
             "count": len(rows),
-            "descendants": rows_to_dicts(rows),
+            "descendants": fn.rows_to_dicts(rows),
         }
 
 
@@ -659,7 +659,7 @@ def traverse_notes_impl(
     include_relations: bool = True,
 ) -> dict[str, Any]:
 
-    topic = validate_nonempty(
+    topic = fn.validate_nonempty(
         topic,
         "topic",
         cfg.MAX_TOPIC_SIZE,
@@ -811,13 +811,13 @@ def link_notes_impl(
     target_topic: str,
 ) -> dict[str, Any]:
 
-    source_topic = validate_nonempty(
+    source_topic = fn.validate_nonempty(
         source_topic,
         "source_topic",
         cfg.MAX_TOPIC_SIZE,
     )
 
-    target_topic = validate_nonempty(
+    target_topic = fn.validate_nonempty(
         target_topic,
         "target_topic",
         cfg.MAX_TOPIC_SIZE,
@@ -893,13 +893,13 @@ def unlink_notes_impl(
     target_topic: str,
 ) -> dict[str, Any]:
 
-    source_topic = validate_nonempty(
+    source_topic = fn.validate_nonempty(
         source_topic,
         "source_topic",
         cfg.MAX_TOPIC_SIZE,
     )
 
-    target_topic = validate_nonempty(
+    target_topic = fn.validate_nonempty(
         target_topic,
         "target_topic",
         cfg.MAX_TOPIC_SIZE,
@@ -951,7 +951,7 @@ def add_external_link_impl(
     description: Optional[str] = None,
 ) -> dict[str, Any]:
 
-    note_topic = validate_nonempty(
+    note_topic = fn.validate_nonempty(
         note_topic,
         "note_topic",
         cfg.MAX_TOPIC_SIZE,
@@ -959,7 +959,7 @@ def add_external_link_impl(
 
     url = validate_url(url)
 
-    description = validate_optional_text(
+    description = fn.validate_optional_text(
         description,
         "description",
         4096,
@@ -1037,7 +1037,7 @@ def save_agent_profile_impl(
     system_prompt: str,
 ) -> dict[str, Any]:
 
-    name = validate_nonempty(
+    name = fn.validate_nonempty(
         name,
         "name",
         256,
@@ -1130,7 +1130,7 @@ def get_agent_profile_impl(
     name: str,
 ) -> dict[str, Any]:
 
-    name = validate_nonempty(
+    name = fn.validate_nonempty(
         name,
         "name",
         256,
@@ -1167,7 +1167,7 @@ def list_agent_profiles_impl() -> dict[str, Any]:
 
         return {
             "count": len(rows),
-            "profiles": rows_to_dicts(rows),
+            "profiles": fn.rows_to_dicts(rows),
         }
 
 
@@ -1175,7 +1175,7 @@ def delete_agent_profile_impl(
     name: str,
 ) -> dict[str, Any]:
 
-    name = validate_nonempty(
+    name = fn.validate_nonempty(
         name,
         "name",
         256,
@@ -1216,13 +1216,13 @@ def create_thread_impl(
     note_topic: Optional[str] = None,
 ) -> dict[str, Any]:
 
-    title = validate_nonempty(
+    title = fn.validate_nonempty(
         title,
         "title",
         1024,
     )
 
-    note_topic = validate_optional_text(
+    note_topic = fn.validate_optional_text(
         note_topic,
         "note_topic",
         cfg.MAX_TOPIC_SIZE,
@@ -1283,13 +1283,13 @@ def post_comment_impl(
             "thread_id must be positive"
         )
 
-    comment = validate_nonempty(
+    comment = fn.validate_nonempty(
         comment,
         "comment",
         MAX_COMMENT_SIZE,
     )
 
-    author = validate_nonempty(
+    author = fn.validate_nonempty(
         author,
         "author",
         256,
@@ -1359,7 +1359,7 @@ def update_thread_status_impl(
             "thread_id must be positive"
         )
 
-    status = validate_nonempty(
+    status = fn.validate_nonempty(
         status,
         "status",
         32,
@@ -1436,7 +1436,7 @@ def get_thread_impl(
 
         return {
             "thread": row_to_dict(thread),
-            "comments": rows_to_dicts(comments),
+            "comments": fn.rows_to_dicts(comments),
         }
 
 
@@ -1456,13 +1456,13 @@ def list_threads_impl(
         cfg.MAX_SEARCH_RESULTS,
     )
 
-    status = validate_optional_text(
+    status = fn.validate_optional_text(
         status,
         "status",
         32,
     )
 
-    note_topic = validate_optional_text(
+    note_topic = fn.validate_optional_text(
         note_topic,
         "note_topic",
         cfg.MAX_TOPIC_SIZE,
@@ -1518,7 +1518,7 @@ def list_threads_impl(
 
         return {
             "count": len(rows),
-            "threads": rows_to_dicts(rows),
+            "threads": fn.rows_to_dicts(rows),
         }
 
 
@@ -1587,7 +1587,7 @@ def render_tree_impl(
 
         if root_topic:
 
-            root_topic = validate_nonempty(
+            root_topic = fn.validate_nonempty(
                 root_topic,
                 "root_topic",
                 cfg.MAX_TOPIC_SIZE,
