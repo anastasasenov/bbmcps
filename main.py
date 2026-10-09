@@ -17,23 +17,24 @@ import sys
 import mcp
 import logging
 import bbmcps_cfg as cfg
+import bbmcps_log as log
 import bbmcps_fn as fn
 
 def main():
 
-    fn.setupLogging()
-    logging.info(
+    logger = log.get_logger()
+    logger.info(
         "%s %s starting",
         cfg.SERVER_NAME,
         cfg.SERVER_VERSION,
     )
 
-    logging.info(
+    logger.info(
         "Python MCP package version: %s",
         getattr(mcp, "__version__", "2.0"),
     )
 
-    logging.info(
+    logger.info(
         "Database: %s",
         cfg.DB_PATH,
     )
