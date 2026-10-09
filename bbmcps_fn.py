@@ -1,6 +1,9 @@
 # BBMCPS
 
+import os
+import sys
 import sqlite3
+import logging
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
@@ -12,7 +15,7 @@ from bbmcps_db import BlackboardDatabase
 import bbmcps_cfg as cfg
 
 g_db = BlackboardDatabase(cfg.DB_PATH)
-g_bb = MCPServer(
+g_srv = MCPServer(
     cfg.SERVER_NAME,
     instructions=(
         "Blackboard is a persistent local SQLite knowledge graph. "
@@ -322,3 +325,19 @@ def resolve_parent_id(
             )
 
     return parent_id
+
+def setupLogging():
+
+   logging.basicConfig(
+        level=getattr(
+            logging,
+            cfg.LOG_LEVEL,
+            "INFO"),
+        format=(
+            "%(asctime)s "
+            "%(levelname)s "
+            "%(name)s: "
+            "%(message)s"
+        ),
+        stream=sys.stderr,
+    )
