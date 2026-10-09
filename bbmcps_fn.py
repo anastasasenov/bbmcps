@@ -26,7 +26,7 @@ g_srv = MCPServer(
         "and agent profiles for reusable behavioral configurations."
     ),
 )
-
+#
 def get_srv():
     return g_srv
 
@@ -326,18 +326,3 @@ def resolve_parent_id(
 
     return parent_id
 
-def setupLogging():
-
-   logging.basicConfig(
-        level=getattr(
-            logging,
-            cfg.LOG_LEVEL,
-            "INFO"),
-        format=(
-            "%(asctime)s "
-            "%(levelname)s "
-            "%(name)s: "
-            "%(message)s"
-        ),
-        stream=sys.stderr,
-    )
