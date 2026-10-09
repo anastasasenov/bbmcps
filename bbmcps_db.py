@@ -12,6 +12,9 @@ from pathlib import Path
 from typing import Any, Iterator, Optional
 from urllib.parse import urlparse
 import bbmcps_cfg as cfg
+import bbmcps_log as log
+
+logger = log.get_logger()
 
 class BlackboardDatabase:
 
@@ -59,7 +62,7 @@ class BlackboardDatabase:
 
     def initialize(self) -> None:
 
-        logging.info(
+        logger.info(
             "Initializing Blackboard database: %s",
             self.path,
         )
@@ -69,7 +72,7 @@ class BlackboardDatabase:
                 "PRAGMA user_version"
             ).fetchone()[0]
 
-            logging.info(
+            logger.info(
                 "Current schema version: %s",
                 version,
             )
@@ -285,12 +288,12 @@ class BlackboardDatabase:
 
             self._rebuild_fts(conn)
 
-            logging.info(
+            logger.info(
                 "SQLite FTS5 enabled"
             )
 
         except sqlite3.OperationalError as exc:
-            logging.warning(
+            logger.warning(
                 "SQLite FTS5 unavailable: %s",
                 exc,
             )
@@ -302,7 +305,7 @@ class BlackboardDatabase:
         to_version: int,
     ) -> None:
 
-        logging.info(
+        logger.info(
             "Migrating database %s -> %s",
             from_version,
             to_version,
