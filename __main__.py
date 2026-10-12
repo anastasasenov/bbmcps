@@ -137,6 +137,16 @@ def resource_threads() -> str:
 # ============================================================================
 
 @blackboard.tool()
+def echo(text: str) -> str:
+    """Return echo text
+
+    Args:
+        text: the text
+    """
+    logging.info(f"Call tool echo with arg: {text}")
+    return f"Echo from the server: {text}"
+
+@blackboard.tool()
 def save_note(
     topic: str,
     content: str,
