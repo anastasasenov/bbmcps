@@ -12,31 +12,51 @@ MAX_SEARCH_RESULTS = 1000
 SCHEMA_VERSION = 3
 
 DB_PATH = Path(
-    os.environ.get("BLACKBOARD_DB", DEFAULT_DB)
+    os.environ.get("BBMCPS_DB", DEFAULT_DB)
 ).expanduser().resolve()
 
 LOG_LEVEL = os.environ.get(
-    "BLACKBOARD_LOG_LEVEL",
+    "BBMCPS_LOG_LEVEL",
     "INFO"
 ).upper()
 
+LOG_FILE = os.environ.get(
+    "BBMCPS_LOG_FILE",
+    "/tmp/bbmcps.log"
+)
+
+SERVER_STDIO = os.environ.get(
+    "BBMCPS_SERVER_STDIO",
+    ""
+)
+
+SERVER_HOST = os.environ.get(
+    "BBMCPS_SERVER_HOST",
+    "0.0.0.0"
+)
+
+SERVER_PORT = os.environ.get(
+    "BBMCPS_SERVER_PORT",
+    "8083"
+)
+
 MAX_CONTENT_SIZE = int(
     os.environ.get(
-        "BLACKBOARD_MAX_CONTENT_SIZE",
+        "BBMCPS_MAX_CONTENT_SIZE",
         str(1024 * 1024)
     )
 )
 
 MAX_COMMENT_SIZE = int(
     os.environ.get(
-        "BLACKBOARD_MAX_COMMENT_SIZE",
+        "BBMCPS_MAX_COMMENT_SIZE",
         str(1024 * 1024)
     )
 )
 
 MAX_PROMPT_SIZE = int(
     os.environ.get(
-        "BLACKBOARD_MAX_PROMPT_SIZE",
+        "BBMCPS_MAX_PROMPT_SIZE",
         str(1024 * 1024)
     )
 )
