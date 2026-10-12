@@ -21,6 +21,7 @@ import os
 import re
 import sqlite3
 import sys
+import asyncio
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
@@ -837,4 +838,7 @@ if __name__ == "__main__":
         cfg.DB_PATH,
     )
 
-    blackboard.run(transport="stdio")
+    if len(cfg.SERVER_STDIO) > 0:
+        asyncio.run( blackboard.run(transport="stdio") )
+    else:
+        pass #todo: url-srv
