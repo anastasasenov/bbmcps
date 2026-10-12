@@ -63,11 +63,11 @@ $ pip install mcp
 
 ### Usage
 
-    Mode (Standard Input/Output)
+    Standard Input/Output:
 
     $ BBMCPS_SERVER_STDIO=stdio && python3 bbmcps
 
-    Mode (SSE - Server-Sent Events)
+    SSE - Server-Sent Events:
 
     $ BBMCPS_SERVER_PORT=12345 && python3 bbmcps
 
