@@ -71,6 +71,10 @@ $ pip install mcp
 
     $ BBMCPS_SERVER_PORT=12345 && python3 bbmcps
 
+    Tests
+
+    $ python3 bbmcps/test.py bbmcps
+
 ### Inspired by
 
 Shared Memory MCP Server ( https://github.com/dx-corp/shared-memory-mcp )
