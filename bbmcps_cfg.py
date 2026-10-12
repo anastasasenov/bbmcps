@@ -6,6 +6,7 @@ from pathlib import Path
 SERVER_NAME = "Blackboard MCP Server"
 SERVER_VERSION = "1.0.0"
 DEFAULT_DB = "blackboard.db"
+ENV_PORT = "BBMCPS_PORT"
 MAX_TOPIC_SIZE = 512
 MAX_URL_SIZE = 4096
 MAX_SEARCH_RESULTS = 1000
@@ -15,28 +16,13 @@ DB_PATH = Path(
     os.environ.get("BBMCPS_DB", DEFAULT_DB)
 ).expanduser().resolve()
 
-LOG_LEVEL = os.environ.get(
-    "BBMCPS_LOG_LEVEL",
-    "INFO"
-).upper()
-
-LOG_FILE = os.environ.get(
-    "BBMCPS_LOG_FILE",
-    "/tmp/bbmcps.log"
-)
-
-SERVER_STDIO = os.environ.get(
-    "BBMCPS_SERVER_STDIO",
-    ""
-)
-
 SERVER_HOST = os.environ.get(
-    "BBMCPS_SERVER_HOST",
+    "BBMCPS_HOST",
     "0.0.0.0"
 )
 
 SERVER_PORT = os.environ.get(
-    "BBMCPS_SERVER_PORT",
+    ENV_PORT,
     "8083"
 )
 
