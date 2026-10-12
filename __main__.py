@@ -5,11 +5,15 @@
 #       mcp >= 2.x
 #
 #   Environment variables:
-#       BLACKBOARD_DB
-#       BLACKBOARD_LOG_LEVEL
-#       BLACKBOARD_MAX_CONTENT_SIZE
-#       BLACKBOARD_MAX_COMMENT_SIZE
-#       BLACKBOARD_MAX_PROMPT_SIZE
+#       BBMCPS_SERVER_STDIO - local mode
+#       BBMCPS_DB
+#       BBMCPS_SERVER_HOST
+#       BBMCPS_SERVER_PORT
+#       BBMCPS_LOG_LEVEL
+#       BBMCPS_LOG_FILE
+#       BBMCPS_MAX_CONTENT_SIZE
+#       BBMCPS_MAX_COMMENT_SIZE
+#       BBMCPS_MAX_PROMPT_SIZE
 
 import json
 import logging
@@ -25,16 +29,15 @@ from urllib.parse import urlparse
 import mcp
 from mcp.server import MCPServer
 import bbmcps_cfg as cfg
-import bbmcps_log as log
 import bbmcps_fn as fn
 import bbmcps_db as db
 import bbmcps_impl as impl
 
 db = fn.get_db()
-logger = log.get_logger()
 
 blackboard = MCPServer(
     cfg.SERVER_NAME,
+    log_level=cfg.LOG_LEVEL,
     instructions=(
         "Blackboard is a persistent local SQLite knowledge graph. "
         "Use search_notes before assuming knowledge is absent. "
@@ -169,7 +172,7 @@ def save_note(
         )
 
     except Exception as exc:
-        logger.exception("save_note failed")
+        logging.exception("save_note failed")
 
         return json_result(
             False,
@@ -195,7 +198,7 @@ def get_note(
         )
 
     except Exception as exc:
-        logger.exception("get_note failed")
+        logging.exception("get_note failed")
 
         return json_result(
             False,
@@ -231,7 +234,7 @@ def delete_note(
         )
 
     except Exception as exc:
-        logger.exception("delete_note failed")
+        logging.exception("delete_note failed")
 
         return json_result(
             False,
@@ -263,7 +266,7 @@ def search_notes(
         )
 
     except Exception as exc:
-        logger.exception("search_notes failed")
+        logging.exception("search_notes failed")
 
         return json_result(
             False,
@@ -289,7 +292,7 @@ def get_ancestors(
         )
 
     except Exception as exc:
-        logger.exception("get_ancestors failed")
+        logging.exception("get_ancestors failed")
 
         return json_result(
             False,
@@ -319,7 +322,7 @@ def get_descendants(
         )
 
     except Exception as exc:
-        logger.exception("get_descendants failed")
+        logging.exception("get_descendants failed")
 
         return json_result(
             False,
@@ -355,7 +358,7 @@ def traverse_notes(
         )
 
     except Exception as exc:
-        logger.exception("traverse_notes failed")
+        logging.exception("traverse_notes failed")
 
         return json_result(
             False,
@@ -385,7 +388,7 @@ def link_notes(
         )
 
     except Exception as exc:
-        logger.exception("link_notes failed")
+        logging.exception("link_notes failed")
 
         return json_result(
             False,
@@ -415,7 +418,7 @@ def unlink_notes(
         )
 
     except Exception as exc:
-        logger.exception("unlink_notes failed")
+        logging.exception("unlink_notes failed")
 
         return json_result(
             False,
@@ -447,7 +450,7 @@ def add_external_link(
         )
 
     except Exception as exc:
-        logger.exception("add_external_link failed")
+        logging.exception("add_external_link failed")
 
         return json_result(
             False,
@@ -475,7 +478,7 @@ def remove_external_link(
         )
 
     except Exception as exc:
-        logger.exception("remove_external_link failed")
+        logging.exception("remove_external_link failed")
 
         return json_result(
             False,
@@ -505,7 +508,7 @@ def save_agent_profile(
         )
 
     except Exception as exc:
-        logger.exception("save_agent_profile failed")
+        logging.exception("save_agent_profile failed")
 
         return json_result(
             False,
@@ -531,7 +534,7 @@ def get_agent_profile(
         )
 
     except Exception as exc:
-        logger.exception("get_agent_profile failed")
+        logging.exception("get_agent_profile failed")
 
         return json_result(
             False,
@@ -555,7 +558,7 @@ def list_agent_profiles() -> str:
         )
 
     except Exception as exc:
-        logger.exception("list_agent_profiles failed")
+        logging.exception("list_agent_profiles failed")
 
         return json_result(
             False,
@@ -584,7 +587,7 @@ def delete_agent_profile(
         )
 
     except Exception as exc:
-        logger.exception("delete_agent_profile failed")
+        logging.exception("delete_agent_profile failed")
 
         return json_result(
             False,
@@ -616,7 +619,7 @@ def create_thread(
         )
 
     except Exception as exc:
-        logger.exception("create_thread failed")
+        logging.exception("create_thread failed")
 
         return json_result(
             False,
@@ -648,7 +651,7 @@ def post_comment(
         )
 
     except Exception as exc:
-        logger.exception("post_comment failed")
+        logging.exception("post_comment failed")
 
         return json_result(
             False,
@@ -676,7 +679,7 @@ def get_thread(
         )
 
     except Exception as exc:
-        logger.exception("get_thread failed")
+        logging.exception("get_thread failed")
 
         return json_result(
             False,
@@ -708,7 +711,7 @@ def list_threads(
         )
 
     except Exception as exc:
-        logger.exception("list_threads failed")
+        logging.exception("list_threads failed")
 
         return json_result(
             False,
@@ -743,7 +746,7 @@ def update_thread_status(
         )
 
     except Exception as exc:
-        logger.exception(
+        logging.exception(
             "update_thread_status failed"
         )
 
@@ -769,7 +772,7 @@ def get_statistics() -> str:
         )
 
     except Exception as exc:
-        logger.exception(
+        logging.exception(
             "get_statistics failed"
         )
 
@@ -799,7 +802,7 @@ def get_tree(
         return result
 
     except Exception as exc:
-        logger.exception("get_tree failed")
+        logging.exception("get_tree failed")
 
         return json_result(
             False,
@@ -809,19 +812,27 @@ def get_tree(
 
 if __name__ == "__main__":
 
-    logger = log.get_logger()
-    logger.info(
+    print(cfg.SERVER_NAME, cfg.SERVER_VERSION,file=sys.stderr)
+    logging.basicConfig(
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        filename=cfg.LOG_FILE,
+        level=getattr(logging, cfg.LOG_LEVEL, None),
+        force=True
+    )
+
+    logging.info(
         "%s %s starting",
         cfg.SERVER_NAME,
         cfg.SERVER_VERSION,
     )
 
-    logger.info(
+    logging.info(
         "Python MCP package version: %s",
         getattr(mcp, "__version__", "2.0"),
     )
 
-    logger.info(
+    logging.info(
         "Database: %s",
         cfg.DB_PATH,
     )
