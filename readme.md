@@ -61,6 +61,16 @@ This is an experimental MCP Server that provides an LLM with a persistent, struc
 
 $ pip install mcp
 
+### Usage
+
+    Mode (Standard Input/Output)
+
+    $ BBMCPS_SERVER_STDIO=stdio && python3 bbmcps
+
+    Mode (SSE - Server-Sent Events)
+
+    $ BBMCPS_SERVER_PORT=12345 && python3 bbmcps
+
 ### Inspired by
 
 Shared Memory MCP Server ( https://github.com/dx-corp/shared-memory-mcp )
