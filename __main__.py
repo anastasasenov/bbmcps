@@ -21,7 +21,6 @@ import os
 import re
 import sqlite3
 import sys
-import asyncio
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
@@ -38,7 +37,6 @@ db = fn.get_db()
 
 blackboard = MCPServer(
     cfg.SERVER_NAME,
-    log_level=cfg.LOG_LEVEL,
     instructions=(
         "Blackboard is a persistent local SQLite knowledge graph. "
         "Use search_notes before assuming knowledge is absent. "
@@ -814,14 +812,6 @@ def get_tree(
 if __name__ == "__main__":
 
     print(cfg.SERVER_NAME, cfg.SERVER_VERSION,file=sys.stderr)
-    logging.basicConfig(
-        format="%(asctime)s [%(levelname)s] %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        filename=cfg.LOG_FILE,
-        level=getattr(logging, cfg.LOG_LEVEL, None),
-        force=True
-    )
-
     logging.info(
         "%s %s starting",
         cfg.SERVER_NAME,
@@ -838,7 +828,4 @@ if __name__ == "__main__":
         cfg.DB_PATH,
     )
 
-    if len(cfg.SERVER_STDIO) > 0:
-        asyncio.run( blackboard.run(transport="stdio") )
-    else:
-        pass #todo: url-srv
+    blackboard.run(transport="stdio")
