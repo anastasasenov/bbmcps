@@ -5,12 +5,9 @@
 #       mcp >= 2.x
 #
 #   Environment variables:
-#       BBMCPS_SERVER_STDIO - local mode
 #       BBMCPS_DB
-#       BBMCPS_SERVER_HOST
-#       BBMCPS_SERVER_PORT
-#       BBMCPS_LOG_LEVEL
-#       BBMCPS_LOG_FILE
+#       BBMCPS_HOST
+#       BBMCPS_PORT
 #       BBMCPS_MAX_CONTENT_SIZE
 #       BBMCPS_MAX_COMMENT_SIZE
 #       BBMCPS_MAX_PROMPT_SIZE
@@ -28,6 +25,7 @@ from typing import Any, Iterator, Optional
 from urllib.parse import urlparse
 import mcp
 from mcp.server import MCPServer
+import asyncio
 import bbmcps_cfg as cfg
 import bbmcps_fn as fn
 import bbmcps_db as db
@@ -809,6 +807,25 @@ def get_tree(
             error_type=type(exc).__name__,
         )
 
+def run_io():
+    blackboard.run()
+
+def run_url():
+
+    try:
+        import uvicorn
+    except ImportError:
+        print("[ ERROR]: pip install uvicorn", file=sys.stderr)
+        sys.exit(1)
+
+    #asgi_app = mcp.streamable_http_blackboard()
+    asgi_app = blackboard
+    uvicorn.run(
+        asgi_app,
+        host=cfg.SERVER_HOST,
+        port=int(cfg.SERVER_PORT)
+    )
+
 if __name__ == "__main__":
 
     print(cfg.SERVER_NAME, cfg.SERVER_VERSION,file=sys.stderr)
@@ -828,4 +845,7 @@ if __name__ == "__main__":
         cfg.DB_PATH,
     )
 
-    blackboard.run(transport="stdio")
+    if cfg.ENV_PORT in os.environ:
+        run_url()
+    else:
+        run_io()
