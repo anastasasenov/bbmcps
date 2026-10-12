@@ -34,7 +34,6 @@ async def tests(mcp_srv):
         args=[mcp_srv]
     )
     print( "BBMCPS tests ...")
-    os.environ["BBMCPS_SERVER_STDIO"] = "stdio"
     await test_list_of_tools(params)
     await test_get_tree(params)
 
