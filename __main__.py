@@ -818,8 +818,11 @@ def run_url():
         print("[ ERROR]: pip install uvicorn", file=sys.stderr)
         sys.exit(1)
 
-    #asgi_app = mcp.streamable_http_blackboard()
-    asgi_app = blackboard
+    # ASGI app ( FastAPI/Starlette )
+    #   note: added params fo easier testing
+    #       stateless_http - no sessions required
+    #       json_response - direct json output
+    asgi_app = blackboard.streamable_http_app(stateless_http=True, json_response=True)
     uvicorn.run(
         asgi_app,
         host=cfg.SERVER_HOST,
