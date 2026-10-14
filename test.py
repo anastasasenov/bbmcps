@@ -40,8 +40,13 @@ async def test_server(cmd, srv, port):
     try:
         async with Client(f"http://127.0.0.1:{port}/mcp") as client:
             tools_response = await client.list_tools()
+            bHasEcho = False
             for tool in tools_response.tools:
-                print(f"{tool.name}: {tool.description}")
+                #print(f"{tool.name}: {tool.description}")
+                if tool.name == "echo":
+                    bHasEcho = True
+                    break
+            assert bHasEcho
             echo_text = "TEST123"
             result = await client.call_tool(
                 name="echo",
@@ -145,11 +150,16 @@ async def test_search(params):
                 result = await session.call_tool(
                     "search_notes",
                     arguments={
+                        "category" : "programming",
                         "query" : "language"
                     }
                 )
                 print(f"\n search_notes result: {result}")
                 assert not result.is_error
+                json_string = result.content[0].text
+                data = json.loads(json_string)
+                count_value = data["count"]
+                assert 2 == count_value
             except Exception as e:
                 assert False, f"\n[FAILED]: {e}"
 
