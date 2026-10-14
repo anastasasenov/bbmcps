@@ -42,11 +42,15 @@ async def test_server(cmd, srv, port):
             tools_response = await client.list_tools()
             for tool in tools_response.tools:
                 print(f"{tool.name}: {tool.description}")
-            #result = await client.call_tool(name="echo",arguments = {"text" : "TEST123" })
-            #print(f"echo: {result.content.text}")
+            echo_text = "TEST123"
+            result = await client.call_tool(
+                name="echo",
+                arguments = {"text" : echo_text })
+            print(f"echo: {str(result.content)}")
+            assert echo_text in str(result.content)
     except Exception as e:
         assert False, f"\n[FAILED]: {e}"
-    p.terminate()
+    p.kill() #p.terminate()
     p.wait()
 
 async def tests(mcp_srv):
