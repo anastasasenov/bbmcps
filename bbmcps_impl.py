@@ -765,7 +765,7 @@ def traverse_notes_impl(
 
             for neighbor_id, edge_type in neighbors:
 
-                neighbor = get_note_by_id(
+                neighbor = fn.get_note_by_id(
                     conn,
                     neighbor_id,
                 )
@@ -957,7 +957,7 @@ def add_external_link_impl(
         cfg.MAX_TOPIC_SIZE,
     )
 
-    url = validate_url(url)
+    url = fn.validate_url(url)
 
     description = fn.validate_optional_text(
         description,
@@ -1297,7 +1297,7 @@ def post_comment_impl(
 
     with db.connection() as conn:
 
-        thread = get_thread(
+        thread = fn.get_thread(
             conn,
             thread_id,
         )
@@ -1375,7 +1375,7 @@ def update_thread_status_impl(
 
     with db.connection() as conn:
 
-        get_thread(
+        fn.get_thread(
             conn,
             thread_id,
         )
@@ -1415,7 +1415,7 @@ def get_thread_impl(
 
     with db.connection() as conn:
 
-        thread = get_thread(
+        thread = fn.get_thread(
             conn,
             thread_id,
         )
