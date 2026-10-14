@@ -6,6 +6,7 @@ from pathlib import Path
 SERVER_NAME = "Blackboard MCP Server"
 SERVER_VERSION = "1.0.0"
 DEFAULT_DB = "blackboard.db"
+SERVER_STATELESS = "BBMCPS_STATELESS"
 ENV_PORT = "BBMCPS_PORT"
 MAX_TOPIC_SIZE = 512
 MAX_URL_SIZE = 4096
