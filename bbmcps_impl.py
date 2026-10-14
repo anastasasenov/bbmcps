@@ -193,7 +193,7 @@ def get_note_impl(
 
     with db.connection() as conn:
 
-        note = get_note_row(
+        note = fn.get_note_row(
             conn,
             topic,
         )
@@ -271,7 +271,7 @@ def delete_note_impl(
 
     with db.connection() as conn:
 
-        note = get_note_row(
+        note = fn.get_note_row(
             conn,
             topic,
         )
@@ -534,7 +534,7 @@ def get_ancestors_impl(
 
     with db.connection() as conn:
 
-        note = get_note_row(
+        note = fn.get_note_row(
             conn,
             topic,
         )
@@ -598,7 +598,7 @@ def get_descendants_impl(
 
     with db.connection() as conn:
 
-        note = get_note_row(
+        note = fn.get_note_row(
             conn,
             topic,
         )
@@ -674,7 +674,7 @@ def traverse_notes_impl(
 
     with db.connection() as conn:
 
-        root = get_note_row(
+        root = fn.get_note_row(
             conn,
             topic,
         )
@@ -825,12 +825,12 @@ def link_notes_impl(
 
     with db.connection() as conn:
 
-        source = get_note_row(
+        source = fn.get_note_row(
             conn,
             source_topic,
         )
 
-        target = get_note_row(
+        target = fn.get_note_row(
             conn,
             target_topic,
         )
@@ -907,12 +907,12 @@ def unlink_notes_impl(
 
     with db.connection() as conn:
 
-        source = get_note_row(
+        source = fn.get_note_row(
             conn,
             source_topic,
         )
 
-        target = get_note_row(
+        target = fn.get_note_row(
             conn,
             target_topic,
         )
@@ -967,7 +967,7 @@ def add_external_link_impl(
 
     with db.connection() as conn:
 
-        note = get_note_row(
+        note = fn.get_note_row(
             conn,
             note_topic,
         )
@@ -1233,7 +1233,7 @@ def create_thread_impl(
         note_id = None
 
         if note_topic:
-            note = get_note_row(
+            note = fn.get_note_row(
                 conn,
                 note_topic,
             )
@@ -1593,7 +1593,7 @@ def render_tree_impl(
                 cfg.MAX_TOPIC_SIZE,
             )
 
-            root = get_note_row(
+            root = fn.get_note_row(
                 conn,
                 root_topic,
             )
