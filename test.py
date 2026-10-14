@@ -82,7 +82,7 @@ async def test_agent_profile(params):
                 assert False, f"\n[FAILED]: {e}"
 
 async def test_note(params):
-    print( "5. Test : note save ...")
+    print( "5. Test : note save/delete ...")
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
@@ -95,7 +95,60 @@ async def test_note(params):
                         "category" : "programming"
                     }
                 )
-                print(f"\n result: {result}")
+                print(f"\n save_note result: {result}")
+                assert not result.is_error
+                result = await session.call_tool(
+                    "get_note",
+                    arguments={
+                        "topic" : "C++"
+                    }
+                )
+                print(f"\n get_note result: {result}")
+                assert not result.is_error
+                result = await session.call_tool(
+                    "delete_note",
+                    arguments={
+                        "topic" : "C++"
+                    }
+                )
+                print(f"\n delete_note result: {result}")
+                assert not result.is_error
+            except Exception as e:
+                assert False, f"\n[FAILED]: {e}"
+
+async def test_search(params):
+    print( "6. Test : search ...")
+    async with stdio_client(params) as (read_stream, write_stream):
+        async with ClientSession(read_stream, write_stream) as session:
+            await session.initialize()
+            try:
+                result = await session.call_tool(
+                    "save_note",
+                    arguments={
+                        "topic" : "Python",
+                        "content" : "It is the best language.",
+                        "category" : "programming"
+                    }
+                )
+                print(f"\n save_note result: {result}")
+                assert not result.is_error
+                result = await session.call_tool(
+                    "save_note",
+                    arguments={
+                        "topic" : "jscript",
+                        "content" : "I like this language.",
+                        "category" : "programming"
+                    }
+                )
+                print(f"\n save_note result: {result}")
+                assert not result.is_error
+                result = await session.call_tool(
+                    "search_notes",
+                    arguments={
+                        "query" : "language"
+                    }
+                )
+                print(f"\n search_notes result: {result}")
                 assert not result.is_error
             except Exception as e:
                 assert False, f"\n[FAILED]: {e}"
@@ -112,6 +165,7 @@ async def tests(mcp_srv):
     await test_server(cmdPython, mcp_srv, 12345)
     await test_agent_profile(params)
     await test_note(params)
+    await test_search(params)
 
 if __name__ == "__main__":
     if 2 == len(sys.argv):
