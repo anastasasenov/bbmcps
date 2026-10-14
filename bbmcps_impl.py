@@ -66,7 +66,7 @@ def save_note_impl(
             (topic,),
         ).fetchone()
 
-        now = utc_now()
+        now = fn.utc_now()
 
         if existing is None:
 
@@ -875,7 +875,7 @@ def link_notes_impl(
             (
                 source_id,
                 target_id,
-                utc_now(),
+                fn.utc_now(),
             ),
         )
 
@@ -986,7 +986,7 @@ def add_external_link_impl(
                 note["id"],
                 url,
                 description,
-                utc_now(),
+                fn.utc_now(),
             ),
         )
 
@@ -1070,7 +1070,7 @@ def save_agent_profile_impl(
             (name,),
         ).fetchone()
 
-        now = utc_now()
+        now = fn.utc_now()
 
         if existing is None:
 
@@ -1240,7 +1240,7 @@ def create_thread_impl(
 
             note_id = note["id"]
 
-        now = utc_now()
+        now = fn.utc_now()
 
         cursor = conn.execute(
             """
@@ -1307,7 +1307,7 @@ def post_comment_impl(
                 "Cannot post to an archived thread"
             )
 
-        now = utc_now()
+        now = fn.utc_now()
 
         cursor = conn.execute(
             """
@@ -1390,7 +1390,7 @@ def update_thread_status_impl(
             """,
             (
                 status,
-                utc_now(),
+                fn.utc_now(),
                 thread_id,
             ),
         )
