@@ -137,16 +137,6 @@ def resource_threads() -> str:
 # ============================================================================
 
 @blackboard.tool()
-def echo(text: str) -> str:
-    """Return echo text
-
-    Args:
-        text: the text
-    """
-    logging.info(f"Call tool echo with arg: {text}")
-    return f"Echo from the server: {text}"
-
-@blackboard.tool()
 def save_note(
     topic: str,
     content: str,
@@ -172,7 +162,7 @@ def save_note(
             agent_profile_name=agent_profile_name,
         )
 
-        return json_result(
+        return fn.json_result(
             True,
             f"Note {result['operation']}",
             **result,
@@ -181,7 +171,7 @@ def save_note(
     except Exception as exc:
         logging.exception("save_note failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -207,7 +197,7 @@ def get_note(
     except Exception as exc:
         logging.exception("get_note failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -234,7 +224,7 @@ def delete_note(
             cascade,
         )
 
-        return json_result(
+        return fn.json_result(
             True,
             "Note deleted",
             **result,
@@ -243,7 +233,7 @@ def delete_note(
     except Exception as exc:
         logging.exception("delete_note failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -275,7 +265,7 @@ def search_notes(
     except Exception as exc:
         logging.exception("search_notes failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -301,7 +291,7 @@ def get_ancestors(
     except Exception as exc:
         logging.exception("get_ancestors failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -331,7 +321,7 @@ def get_descendants(
     except Exception as exc:
         logging.exception("get_descendants failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -367,7 +357,7 @@ def traverse_notes(
     except Exception as exc:
         logging.exception("traverse_notes failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -388,7 +378,7 @@ def link_notes(
             target_topic,
         )
 
-        return json_result(
+        return fn.json_result(
             True,
             "Relation processed",
             **result,
@@ -397,7 +387,7 @@ def link_notes(
     except Exception as exc:
         logging.exception("link_notes failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -418,7 +408,7 @@ def unlink_notes(
             target_topic,
         )
 
-        return json_result(
+        return fn.json_result(
             True,
             "Relation removal processed",
             **result,
@@ -427,7 +417,7 @@ def unlink_notes(
     except Exception as exc:
         logging.exception("unlink_notes failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -450,7 +440,7 @@ def add_external_link(
             description,
         )
 
-        return json_result(
+        return fn.json_result(
             True,
             "External link created",
             **result,
@@ -459,7 +449,7 @@ def add_external_link(
     except Exception as exc:
         logging.exception("add_external_link failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -478,7 +468,7 @@ def remove_external_link(
             link_id,
         )
 
-        return json_result(
+        return fn.json_result(
             True,
             "External link deleted",
             **result,
@@ -487,7 +477,7 @@ def remove_external_link(
     except Exception as exc:
         logging.exception("remove_external_link failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -508,7 +498,7 @@ def save_agent_profile(
             system_prompt,
         )
 
-        return json_result(
+        return fn.json_result(
             True,
             f"Agent profile {result['operation']}",
             **result,
@@ -517,7 +507,7 @@ def save_agent_profile(
     except Exception as exc:
         logging.exception("save_agent_profile failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -543,7 +533,7 @@ def get_agent_profile(
     except Exception as exc:
         logging.exception("get_agent_profile failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -567,7 +557,7 @@ def list_agent_profiles() -> str:
     except Exception as exc:
         logging.exception("list_agent_profiles failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -587,7 +577,7 @@ def delete_agent_profile(
     try:
         result = impl.delete_agent_profile_impl(name)
 
-        return json_result(
+        return fn.json_result(
             True,
             "Agent profile deleted",
             **result,
@@ -596,7 +586,7 @@ def delete_agent_profile(
     except Exception as exc:
         logging.exception("delete_agent_profile failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -619,7 +609,7 @@ def create_thread(
             note_topic,
         )
 
-        return json_result(
+        return fn.json_result(
             True,
             "Discussion thread created",
             **result,
@@ -628,7 +618,7 @@ def create_thread(
     except Exception as exc:
         logging.exception("create_thread failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -651,7 +641,7 @@ def post_comment(
             author,
         )
 
-        return json_result(
+        return fn.json_result(
             True,
             "Comment created",
             **result,
@@ -660,7 +650,7 @@ def post_comment(
     except Exception as exc:
         logging.exception("post_comment failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -688,7 +678,7 @@ def get_thread(
     except Exception as exc:
         logging.exception("get_thread failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -720,7 +710,7 @@ def list_threads(
     except Exception as exc:
         logging.exception("list_threads failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -746,7 +736,7 @@ def update_thread_status(
             status,
         )
 
-        return json_result(
+        return fn.json_result(
             True,
             "Thread status updated",
             **result,
@@ -757,7 +747,7 @@ def update_thread_status(
             "update_thread_status failed"
         )
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -783,7 +773,7 @@ def get_statistics() -> str:
             "get_statistics failed"
         )
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
@@ -811,11 +801,21 @@ def get_tree(
     except Exception as exc:
         logging.exception("get_tree failed")
 
-        return json_result(
+        return fn.json_result(
             False,
             str(exc),
             error_type=type(exc).__name__,
         )
+
+@blackboard.tool()
+def echo(text: str) -> str:
+    """Return echo text (debug)
+
+    Args:
+        text: the text
+    """
+    logging.info(f"Call tool echo with arg: {text}")
+    return f"Echo from the server: {text}"
 
 def run_io():
     blackboard.run()
