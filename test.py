@@ -66,8 +66,37 @@ async def test_agent_profile(params):
                         "system_prompt" : "You are an senior coder."
                     }
                 )
-                print(f"\n get_tree: {result}")
-                #assert response["success"] is True
+                print(f"\n result: {result}")
+                assert not result.is_error
+                # if hasattr(result, 'content') and result.content:
+                #     print( str(result.content))
+                result = await session.call_tool(
+                    "get_agent_profile",
+                    arguments={
+                        "name" : "coder"
+                    }
+                )
+                print(f"\n result: {result}")
+                assert not result.is_error
+            except Exception as e:
+                assert False, f"\n[FAILED]: {e}"
+
+async def test_note(params):
+    print( "5. Test : note save ...")
+    async with stdio_client(params) as (read_stream, write_stream):
+        async with ClientSession(read_stream, write_stream) as session:
+            await session.initialize()
+            try:
+                result = await session.call_tool(
+                    "save_note",
+                    arguments={
+                        "topic" : "C++",
+                        "content" : "This is crazy language.",
+                        "category" : "programming"
+                    }
+                )
+                print(f"\n result: {result}")
+                assert not result.is_error
             except Exception as e:
                 assert False, f"\n[FAILED]: {e}"
 
@@ -82,6 +111,7 @@ async def tests(mcp_srv):
     await test_get_tree(params)
     await test_server(cmdPython, mcp_srv, 12345)
     await test_agent_profile(params)
+    await test_note(params)
 
 if __name__ == "__main__":
     if 2 == len(sys.argv):
