@@ -70,7 +70,7 @@ def save_note_impl(
 
         if existing is None:
 
-            parent_id = resolve_parent_id(
+            parent_id = fn.resolve_parent_id(
                 conn,
                 parent_topic,
             )
@@ -78,7 +78,7 @@ def save_note_impl(
             profile_id = None
 
             if agent_profile_name:
-                profile_id = get_profile_by_name(
+                profile_id = fn.get_profile_by_name(
                     conn,
                     agent_profile_name,
                 )["id"]
@@ -117,7 +117,7 @@ def save_note_impl(
 
         note_id = int(existing["id"])
 
-        parent_id = resolve_parent_id(
+        parent_id = fn.resolve_parent_id(
             conn,
             parent_topic,
             current_note_id=note_id,
@@ -126,7 +126,7 @@ def save_note_impl(
         profile_id = None
 
         if agent_profile_name:
-            profile_id = get_profile_by_name(
+            profile_id = fn.get_profile_by_name(
                 conn,
                 agent_profile_name,
             )["id"]
@@ -251,7 +251,7 @@ def get_note_impl(
         ).fetchall()
 
         return {
-            "note": row_to_dict(note),
+            "note": fn.row_to_dict(note),
             "children": fn.rows_to_dicts(children),
             "relations": fn.rows_to_dicts(relations),
             "external_links": fn.rows_to_dicts(links),
@@ -1138,13 +1138,13 @@ def get_agent_profile_impl(
 
     with db.connection() as conn:
 
-        row = get_profile_by_name(
+        row = fn.get_profile_by_name(
             conn,
             name,
         )
 
         return {
-            "profile": row_to_dict(row),
+            "profile": fn.row_to_dict(row),
         }
 
 
@@ -1183,7 +1183,7 @@ def delete_agent_profile_impl(
 
     with db.connection() as conn:
 
-        row = get_profile_by_name(
+        row = fn.get_profile_by_name(
             conn,
             name,
         )
@@ -1435,7 +1435,7 @@ def get_thread_impl(
         ).fetchall()
 
         return {
-            "thread": row_to_dict(thread),
+            "thread": fn.row_to_dict(thread),
             "comments": fn.rows_to_dicts(comments),
         }
 
