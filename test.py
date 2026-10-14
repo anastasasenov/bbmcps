@@ -4,11 +4,14 @@ import os
 import sys
 import json
 import asyncio
+import time
+import subprocess
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+from mcp import Client
 
 async def test_list_of_tools(params):
-    print( "1. Test : list of tools --- ")
+    print( "1. Test : list of tools ... ")
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
@@ -18,7 +21,7 @@ async def test_list_of_tools(params):
                 print(f"- {tool.name}: {tool.description}")
 
 async def test_get_tree(params):
-    print( "2. Test : get_tree --- ")
+    print( "2. Test : get_tree ...")
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
@@ -28,14 +31,34 @@ async def test_get_tree(params):
             except Exception as e:
                 assert False, f"\n[FAILED]: {e}"
 
+async def test_server(cmd, srv, port):
+    print( "3. Test : remote server ...")
+    local_env = os.environ.copy()
+    local_env["BBMCPS_PORT"] = str(port)
+    p = subprocess.Popen([cmd, srv], env=local_env)
+    time.sleep(3)
+    try:
+        async with Client(f"http://127.0.0.1:{port}/mcp") as client:
+            tools_response = await client.list_tools()
+            for tool in tools_response.tools:
+                print(f"{tool.name}: {tool.description}")
+            #result = await client.call_tool(name="echo",arguments = {"text" : "TEST123" })
+            #print(f"echo: {result.content.text}")
+    except Exception as e:
+        assert False, f"\n[FAILED]: {e}"
+    p.terminate()
+    p.wait()
+
 async def tests(mcp_srv):
+    cmdPython = "python3"
     params = StdioServerParameters(
-        command="python3",
+        command=cmdPython,
         args=[mcp_srv]
     )
     print( "BBMCPS tests ...")
     await test_list_of_tools(params)
     await test_get_tree(params)
+    await test_server(cmdPython, mcp_srv, 12345)
 
 if __name__ == "__main__":
     if 2 == len(sys.argv):
