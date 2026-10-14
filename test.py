@@ -53,6 +53,24 @@ async def test_server(cmd, srv, port):
     p.kill() #p.terminate()
     p.wait()
 
+async def test_agent_profile(params):
+    print( "4. Test : agent profile ...")
+    async with stdio_client(params) as (read_stream, write_stream):
+        async with ClientSession(read_stream, write_stream) as session:
+            await session.initialize()
+            try:
+                result = await session.call_tool(
+                    "save_agent_profile",
+                    arguments={
+                        "name" : "coder",
+                        "system_prompt" : "You are an senior coder."
+                    }
+                )
+                print(f"\n get_tree: {result}")
+                #assert response["success"] is True
+            except Exception as e:
+                assert False, f"\n[FAILED]: {e}"
+
 async def tests(mcp_srv):
     cmdPython = "python3"
     params = StdioServerParameters(
@@ -63,6 +81,7 @@ async def tests(mcp_srv):
     await test_list_of_tools(params)
     await test_get_tree(params)
     await test_server(cmdPython, mcp_srv, 12345)
+    await test_agent_profile(params)
 
 if __name__ == "__main__":
     if 2 == len(sys.argv):
