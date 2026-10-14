@@ -470,7 +470,7 @@ def search_notes_impl(
             else:
                 rows = []
 
-        else:
+        if 0 == len(rows):
 
             pattern = f"%{query}%"
 
