@@ -828,6 +828,12 @@ def run_url():
         print("[ ERROR]: pip install uvicorn", file=sys.stderr)
         sys.exit(1)
 
+    if cfg.ENV_DEBUG in os.environ:
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
+
     if cfg.SERVER_STATELESS in os.environ:
         # ASGI app ( FastAPI/Starlette )
         #   note: added params fo easier testing
@@ -847,22 +853,6 @@ def run_url():
 
 def run():
     print(cfg.SERVER_NAME, cfg.SERVER_VERSION,file=sys.stderr)
-    logging.info(
-        "%s %s starting",
-        cfg.SERVER_NAME,
-        cfg.SERVER_VERSION,
-    )
-
-    logging.info(
-        "Python MCP package version: %s",
-        getattr(mcp, "__version__", "2.0"),
-    )
-
-    logging.info(
-        "Database: %s",
-        cfg.DB_PATH,
-    )
-
     if cfg.ENV_PORT in os.environ:
         run_url()
     else:
