@@ -102,32 +102,27 @@ async def test_note(num, params):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
             try:
-                result = await session.call_tool(
+                result = await call_tool(
+                    session,
                     "save_note",
-                    arguments={
+                    {
                         "topic" : "C++",
-                        "content" : "This is crazy language.",
+                        "content" : "There are no seatbelts in C++.",
                         "category" : "programming"
                     }
                 )
-                print(f"\n save_note result: {result}")
-                assert not result.is_error
-                result = await session.call_tool(
+                result = await call_tool(
+                    session,
                     "get_note",
-                    arguments={
-                        "topic" : "C++"
-                    }
+                    { "topic" : "C++" }
                 )
-                print(f"\n get_note result: {result}")
-                assert not result.is_error
-                result = await session.call_tool(
+                data = json.loads(result.content[0].text)
+                assert data["note"]['category'] == "programming"
+                result = await call_tool(
+                    session,
                     "delete_note",
-                    arguments={
-                        "topic" : "C++"
-                    }
+                    { "topic" : "C++" }
                 )
-                print(f"\n delete_note result: {result}")
-                assert not result.is_error
             except Exception as e:
                 assert False, f"\n[FAILED]: {e}"
 
@@ -137,35 +132,32 @@ async def test_search(num, params):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
             try:
-                result = await session.call_tool(
+                result = await call_tool(
+                    session,
                     "save_note",
-                    arguments={
+                    {
                         "topic" : "Python",
                         "content" : "It is the best language.",
                         "category" : "programming"
                     }
                 )
-                print(f"\n save_note result: {result}")
-                assert not result.is_error
-                result = await session.call_tool(
+                result = await call_tool(
+                    session,
                     "save_note",
-                    arguments={
+                    {
                         "topic" : "jscript",
                         "content" : "I like this language.",
                         "category" : "programming"
                     }
                 )
-                print(f"\n save_note result: {result}")
-                assert not result.is_error
-                result = await session.call_tool(
+                result = await call_tool(
+                    session,
                     "search_notes",
-                    arguments={
+                    {
                         "category" : "programming",
                         "query" : "language"
                     }
                 )
-                print(f"\n search_notes result: {result}")
-                assert not result.is_error
                 data = json.loads(result.content[0].text)
                 assert 2 == data["count"]
             except Exception as e:
