@@ -10,29 +10,36 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from mcp import Client
 
-async def test_list_of_tools(params):
-    print( "1. Test : list of tools ... ")
+async def call_tool(session, tool, args):
+    result = await session.call_tool(tool, args)
+    assert not result.is_error
+    print(f"\t{tool} ... OK")
+    return result
+
+async def test_list_of_tools(num, params):
+    print( f"\n{num}. Test list of tools ... ")
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
             tools_response = await session.list_tools()
-            print("\n instruments:")
+            assert 23 == len(tools_response.tools)
+            print(f"\t{len(tools_response.tools)} instruments")
             for tool in tools_response.tools:
-                print(f"- {tool.name}: {tool.description}")
+                assert len(tool.name) > 0
+                assert len(tool.description) > 0
 
-async def test_get_tree(params):
-    print( "2. Test : get_tree ...")
+async def test_get_tree(num, params):
+    print( f"\n{num}. Test simple tool - get_tree ...")
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
             try:
-                result = await session.call_tool("get_tree", arguments={})
-                print(f"\n get_tree: {result}")
+                result = await call_tool( session, "get_tree",{})
             except Exception as e:
                 assert False, f"\n[FAILED]: {e}"
 
-async def test_server(cmd, srv, port):
-    print( "3. Test : remote server ...")
+async def test_server(num, cmd, srv, port):
+    print( f"\n{num}. Test remote server ( tool echo ) ...")
     local_env = os.environ.copy()
     local_env["BBMCPS_PORT"] = str(port)
     p = subprocess.Popen([cmd, srv], env=local_env)
@@ -42,7 +49,6 @@ async def test_server(cmd, srv, port):
             tools_response = await client.list_tools()
             bHasEcho = False
             for tool in tools_response.tools:
-                #print(f"{tool.name}: {tool.description}")
                 if tool.name == "echo":
                     bHasEcho = True
                     break
@@ -51,43 +57,41 @@ async def test_server(cmd, srv, port):
             result = await client.call_tool(
                 name="echo",
                 arguments = {"text" : echo_text })
-            print(f"echo: {str(result.content)}")
             assert echo_text in str(result.content)
+            print("\techo ... OK")
     except Exception as e:
         assert False, f"\n[FAILED]: {e}"
     p.kill() #p.terminate()
     p.wait()
 
-async def test_agent_profile(params):
-    print( "4. Test : agent profile ...")
+async def test_agent_profile(num, params):
+    print( f"\n{num}. Test agent profiles ...")
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
             try:
-                result = await session.call_tool(
+                result = await call_tool(
+                    session,
                     "save_agent_profile",
-                    arguments={
+                    {
                         "name" : "coder",
                         "system_prompt" : "You are an senior coder."
                     }
                 )
-                print(f"\n result: {result}")
-                assert not result.is_error
-                # if hasattr(result, 'content') and result.content:
-                #     print( str(result.content))
-                result = await session.call_tool(
+                result = await call_tool(
+                    session,
                     "get_agent_profile",
-                    arguments={
+                    {
                         "name" : "coder"
                     }
                 )
-                print(f"\n result: {result}")
-                assert not result.is_error
+                data = json.loads(result.content[0].text)
+                assert data['profile']["name"] == "coder"
             except Exception as e:
                 assert False, f"\n[FAILED]: {e}"
 
-async def test_note(params):
-    print( "5. Test : note save/delete ...")
+async def test_note(num, params):
+    print( f"\n{num}. Test : note save/delete ...")
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
@@ -121,8 +125,8 @@ async def test_note(params):
             except Exception as e:
                 assert False, f"\n[FAILED]: {e}"
 
-async def test_search(params):
-    print( "6. Test : search ...")
+async def test_search(num, params):
+    print( f"\n{num}. Test : search ...")
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
@@ -156,10 +160,8 @@ async def test_search(params):
                 )
                 print(f"\n search_notes result: {result}")
                 assert not result.is_error
-                json_string = result.content[0].text
-                data = json.loads(json_string)
-                count_value = data["count"]
-                assert 2 == count_value
+                data = json.loads(result.content[0].text)
+                assert 2 == data["count"]
             except Exception as e:
                 assert False, f"\n[FAILED]: {e}"
 
@@ -170,12 +172,12 @@ async def tests(mcp_srv):
         args=[mcp_srv]
     )
     print( "BBMCPS tests ...")
-    await test_list_of_tools(params)
-    await test_get_tree(params)
-    await test_server(cmdPython, mcp_srv, 12345)
-    await test_agent_profile(params)
-    await test_note(params)
-    await test_search(params)
+    await test_list_of_tools(1, params)
+    await test_get_tree(2, params)
+    await test_agent_profile(3, params)
+    await test_note(4, params)
+    await test_search(5, params)
+    await test_server(6, cmdPython, mcp_srv, 12345)
 
 if __name__ == "__main__":
     if 2 == len(sys.argv):
