@@ -6,6 +6,7 @@ import json
 import asyncio
 import time
 import subprocess
+import logging
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from mcp import Client
@@ -40,6 +41,11 @@ async def test_get_tree(num, params):
 
 async def test_server(num, cmd, srv, port):
     print( f"\n{num}. Test remote server ( tool echo ) ...")
+    if "BBMCPS_DEBUG" in os.environ:
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
     local_env = os.environ.copy()
     local_env["BBMCPS_PORT"] = str(port)
     p = subprocess.Popen([cmd, srv], env=local_env)
@@ -165,6 +171,20 @@ async def test_search(num, params):
             except Exception as e:
                 assert False, f"\n[FAILED]: {e}"
 
+async def test_resources(num, params):
+    print( f"\n{num}. Test resources ...")
+    async with stdio_client(params) as (read_stream, write_stream):
+        async with ClientSession(read_stream, write_stream) as session:
+            await session.initialize()
+            result = await session.list_resources()
+            print(f"\t{len(result.resources)} resources")
+            assert 5 == len(result.resources)
+            for res in result.resources:
+                assert len(res.name) > 0
+                assert len(res.uri) > 0
+                assert len(res.description) > 0
+                #print(f"\t {res.name} {res.uri} {res.description}")
+
 async def tests(mcp_srv):
     cmdPython = "python3"
     params = StdioServerParameters(
@@ -173,11 +193,12 @@ async def tests(mcp_srv):
     )
     print( "BBMCPS tests ...")
     await test_list_of_tools(1, params)
-    await test_get_tree(2, params)
-    await test_agent_profile(3, params)
-    await test_note(4, params)
-    await test_search(5, params)
-    await test_server(6, cmdPython, mcp_srv, 12345)
+    await test_resources(2, params)
+    await test_get_tree(3, params)
+    await test_agent_profile(4, params)
+    await test_note(5, params)
+    await test_search(6, params)
+    await test_server(7, cmdPython, mcp_srv, 12345)
 
 if __name__ == "__main__":
     if 2 == len(sys.argv):
