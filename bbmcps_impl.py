@@ -1684,7 +1684,7 @@ def render_tree_impl(
             if depth == 0:
                 marker = ""
             else:
-                marker = "└── "
+                marker = "|-- "
 
             lines.append(
                 f"{prefix}{marker}"
