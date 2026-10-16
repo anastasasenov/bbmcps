@@ -15,7 +15,7 @@ async def call_tool(session, tool, args):
     result = None
     try:
         result = await session.call_tool(tool, args)
-        assert not result.is_error
+        assert not result.is_error, f"{tool}({str(args)}) -> {str(result)}"
         print(f"\t{tool} ... OK")
     except Exception as e:
         assert False, f"\n\t[FAILED]: {e}\n\t\t{tool}({str(args)})"
@@ -34,14 +34,14 @@ async def test_list_of_tools(num, params):
                 assert len(tool.description) > 0
 
 async def test_get_tree(num, params):
-    print( f"\n{num}. Test simple tool - get_tree ...")
+    print( f"\n{num}. Test a simple tool: get_tree ...")
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
             await call_tool( session, "get_tree",{})
 
 async def test_server(num, cmd, srv, port):
-    print( f"\n{num}. Test remote server ( tool echo ) ...")
+    print( f"\n{num}. Test SSE ( tool echo ) ...")
     if "BBMCPS_DEBUG" in os.environ:
         logging.basicConfig(
             level=logging.DEBUG,
@@ -95,7 +95,7 @@ async def test_agent_profile(num, params):
             assert data['profile']["name"] == "coder"
 
 async def test_note(num, params):
-    print( f"\n{num}. Test : note save/delete ...")
+    print( f"\n{num}. Test save/delete notes ...")
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
@@ -122,7 +122,7 @@ async def test_note(num, params):
             )
 
 async def test_search(num, params):
-    print( f"\n{num}. Test : search ...")
+    print( f"\n{num}. Test save/search notes ...")
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
@@ -156,7 +156,7 @@ async def test_search(num, params):
             assert 2 == data["count"]
 
 async def test_resources(num, params):
-    print( f"\n{num}. Test resources ...")
+    print( f"\n{num}. Test list of resources ...")
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
@@ -168,6 +168,64 @@ async def test_resources(num, params):
                 assert len(res.uri) > 0
                 assert len(res.description) > 0
                 #print(f"\t {res.name} {res.uri} {res.description}")
+
+async def test_link(num, params):
+    print( f"\n{num}. Test links ...")
+    async with stdio_client(params) as (read_stream, write_stream):
+        async with ClientSession(read_stream, write_stream) as session:
+            await session.initialize()
+            result = await call_tool(
+                session,
+                "save_note",
+                {
+                    "topic" : "A",
+                    "content" : "content-A",
+                    "category" : "test"
+                }
+            )
+            result = await call_tool(
+                session,
+                "save_note",
+                {
+                    "topic" : "B",
+                    "content" : "content-B",
+                    "category" : "test"
+                }
+            )
+            result = await call_tool(
+                session,
+                "link_notes",
+                {
+                    "source_topic": "A",
+                    "target_topic": "B"
+                }
+            )
+            result = await call_tool(
+                session,
+                "unlink_notes",
+                {
+                    "source_topic": "A",
+                    "target_topic": "B"
+                }
+            )
+            result = await call_tool(
+                session,
+                "add_external_link",
+                {
+                    "note_topic" : "A",
+                    "url" : "https://myurl.edu",
+                    "description" : "edu"
+                }
+            )
+            data = json.loads(result.content[0].text)
+            link_id = data["id"]
+            result = await call_tool(
+                session,
+                "remove_external_link",
+                {
+                    "link_id" : link_id
+                }
+            )
 
 async def tests(mcp_srv):
     cmdPython = "python3"
@@ -182,7 +240,8 @@ async def tests(mcp_srv):
     await test_agent_profile(4, params)
     await test_note(5, params)
     await test_search(6, params)
-    await test_server(7, cmdPython, mcp_srv, 12345)
+    await test_link(7, params)
+    await test_server(8, cmdPython, mcp_srv, 12345)
 
 if __name__ == "__main__":
     if 2 == len(sys.argv):
