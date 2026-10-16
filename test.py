@@ -227,6 +227,51 @@ async def test_link(num, params):
                 }
             )
 
+async def test_traversal(num, params):
+    print( f"\n{num}. Test walking through the notes ...")
+    async with stdio_client(params) as (read_stream, write_stream):
+        async with ClientSession(read_stream, write_stream) as session:
+            await session.initialize()
+            result = await call_tool(
+                session,
+                "save_note",
+                {
+                    "topic" : "X",
+                    "content" : "content-X",
+                    "category" : "test"
+                }
+            )
+            result = await call_tool(
+                session,
+                "save_note",
+                {
+                    "topic" : "Y",
+                    "content" : "content-Y",
+                    "category" : "test"
+                }
+            )
+            result = await call_tool(
+                session,
+                "save_note",
+                {
+                    "topic" : "Z",
+                    "content" : "content-Z",
+                    "category" : "test"
+                }
+            )
+            result = await call_tool(
+                session,
+                "traverse_notes",
+                {
+                    "topic" : "Y",
+                    "depth" : 3,
+                    "include_children" : True,
+                    "include_relations": True
+                }
+            )
+            data = json.loads(result.content[0].text)
+            assert data["root"] == "Y"
+
 async def tests(mcp_srv):
     cmdPython = "python3"
     params = StdioServerParameters(
@@ -240,8 +285,9 @@ async def tests(mcp_srv):
     await test_agent_profile(4, params)
     await test_note(5, params)
     await test_search(6, params)
-    await test_link(7, params)
-    await test_server(8, cmdPython, mcp_srv, 12345)
+    await test_traversal(7, params)
+    await test_link(8, params)
+    await test_server(9, cmdPython, mcp_srv, 12345)
 
 if __name__ == "__main__":
     if 2 == len(sys.argv):
