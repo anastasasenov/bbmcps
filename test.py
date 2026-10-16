@@ -12,9 +12,13 @@ from mcp.client.stdio import stdio_client
 from mcp import Client
 
 async def call_tool(session, tool, args):
-    result = await session.call_tool(tool, args)
-    assert not result.is_error
-    print(f"\t{tool} ... OK")
+    result = None
+    try:
+        result = await session.call_tool(tool, args)
+        assert not result.is_error
+        print(f"\t{tool} ... OK")
+    except Exception as e:
+        assert False, f"\n\t[FAILED]: {e}\n\t\t{tool}({str(args)})"
     return result
 
 async def test_list_of_tools(num, params):
@@ -34,10 +38,7 @@ async def test_get_tree(num, params):
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
-            try:
-                result = await call_tool( session, "get_tree",{})
-            except Exception as e:
-                assert False, f"\n[FAILED]: {e}"
+            await call_tool( session, "get_tree",{})
 
 async def test_server(num, cmd, srv, port):
     print( f"\n{num}. Test remote server ( tool echo ) ...")
@@ -75,93 +76,84 @@ async def test_agent_profile(num, params):
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
-            try:
-                result = await call_tool(
-                    session,
-                    "save_agent_profile",
-                    {
-                        "name" : "coder",
-                        "system_prompt" : "You are an senior coder."
-                    }
-                )
-                result = await call_tool(
-                    session,
-                    "get_agent_profile",
-                    {
-                        "name" : "coder"
-                    }
-                )
-                data = json.loads(result.content[0].text)
-                assert data['profile']["name"] == "coder"
-            except Exception as e:
-                assert False, f"\n[FAILED]: {e}"
+            result = await call_tool(
+                session,
+                "save_agent_profile",
+                {
+                    "name" : "coder",
+                    "system_prompt" : "You are an senior coder."
+                }
+            )
+            result = await call_tool(
+                session,
+                "get_agent_profile",
+                {
+                    "name" : "coder"
+                }
+            )
+            data = json.loads(result.content[0].text)
+            assert data['profile']["name"] == "coder"
 
 async def test_note(num, params):
     print( f"\n{num}. Test : note save/delete ...")
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
-            try:
-                result = await call_tool(
-                    session,
-                    "save_note",
-                    {
-                        "topic" : "C++",
-                        "content" : "There are no seatbelts in C++.",
-                        "category" : "programming"
-                    }
-                )
-                result = await call_tool(
-                    session,
-                    "get_note",
-                    { "topic" : "C++" }
-                )
-                data = json.loads(result.content[0].text)
-                assert data["note"]['category'] == "programming"
-                result = await call_tool(
-                    session,
-                    "delete_note",
-                    { "topic" : "C++" }
-                )
-            except Exception as e:
-                assert False, f"\n[FAILED]: {e}"
+            result = await call_tool(
+                session,
+                "save_note",
+                {
+                    "topic" : "C++",
+                    "content" : "There are no seatbelts in C++.",
+                    "category" : "programming"
+                }
+            )
+            result = await call_tool(
+                session,
+                "get_note",
+                { "topic" : "C++" }
+            )
+            data = json.loads(result.content[0].text)
+            assert data["note"]['category'] == "programming"
+            result = await call_tool(
+                session,
+                "delete_note",
+                { "topic" : "C++" }
+            )
 
 async def test_search(num, params):
     print( f"\n{num}. Test : search ...")
     async with stdio_client(params) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
-            try:
-                result = await call_tool(
-                    session,
-                    "save_note",
-                    {
-                        "topic" : "Python",
-                        "content" : "It is the best language.",
-                        "category" : "programming"
-                    }
-                )
-                result = await call_tool(
-                    session,
-                    "save_note",
-                    {
-                        "topic" : "jscript",
-                        "content" : "I like this language.",
-                        "category" : "programming"
-                    }
-                )
-                result = await call_tool(
-                    session,
-                    "search_notes",
-                    {
-                        "category" : "programming",
-                        "query" : "language"
-                    }
-                )
-                data = json.loads(result.content[0].text)
-                assert 2 == data["count"]
-            except Exception as e:
-                assert False, f"\n[FAILED]: {e}"
+            result = await call_tool(
+                session,
+                "save_note",
+                {
+                    "topic" : "Python",
+                    "content" : "It is the best language.",
+                    "category" : "programming"
+                }
+            )
+            result = await call_tool(
+                session,
+                "save_note",
+                {
+                    "topic" : "jscript",
+                    "content" : "I like this language.",
+                    "category" : "programming"
+                }
+            )
+            result = await call_tool(
+                session,
+                "search_notes",
+                {
+                    "category" : "programming",
+                    "query" : "language"
+                }
+            )
+            data = json.loads(result.content[0].text)
+            assert 2 == data["count"]
 
 async def test_resources(num, params):
     print( f"\n{num}. Test resources ...")
